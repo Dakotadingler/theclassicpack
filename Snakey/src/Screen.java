@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 public class Screen extends JPanel implements Runnable, KeyListener {
  
     private static final long serialVersionUID = 1L;
-    public static final int WIDTH = 300, HEIGHT = 300;
+    public static final int WIDTH = 400, HEIGHT = 400;
     private Thread thread;
     private boolean running = false;
  
