@@ -29,7 +29,7 @@ public class Pong extends JPanel implements ActionListener {
 	private int playPoints;
 	
 	//Used to start/stop the game
-	private boolean gameStart = false;
+	private boolean gameStart = true;
 	
 	
 	
