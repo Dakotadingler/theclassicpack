@@ -1,11 +1,11 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+//import java.util.*;
+//import java.util.concurrent.TimeUnit;
 
 import javax.swing.Timer;
 
-import javax.swing.JPanel;
+//import javax.swing.JPanel;
 import javax.swing.*;
 
 
@@ -30,23 +30,30 @@ public class Pong extends JPanel implements ActionListener {
 	
 	//Used to start/stop the game
 	private boolean gameStart = true;
+	private int desiredScore;
+	
+	private double playerSpeed=10;
+	private double computerSpeed=10;
+	private double ballSpeed=10;
 	
 	
 	
 	public Pong() {
 		
-		initSetup();
+		
 		
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) { //if an action is performed
 		
+		//System.out.println(mc.changeY + "\t" + com.changeY + "\t" + ball.change);
+		
 		step();
 		
 	}
 	
-	private void initSetup() {
+	public void initSetup() {
 		
 		addKeyListener( new TAdapter() ); //used to notice buttons
 		setBackground( Color.black ); //sets the background of the window to black
@@ -55,9 +62,13 @@ public class Pong extends JPanel implements ActionListener {
 		//Player.setHeight(windowHeight);
 		
 		//creates objects inside the game
-		mc = new Player();
-		ball = new Ball();
-		com = new Computer();
+		mc = new Player(playerSpeed);
+		ball = new Ball(ballSpeed);
+		com = new Computer(computerSpeed);
+		
+		mc.changeY = playerSpeed;
+		com.changeY = computerSpeed;
+		ball.change = ballSpeed;
 		
 		//mc.setHeight(windowHeight);
 		
@@ -87,6 +98,10 @@ public class Pong extends JPanel implements ActionListener {
 	}
 	
 	private void doDrawing(Graphics g) { //used to update the screen
+		
+		mc.changeY = playerSpeed;
+		com.changeY = computerSpeed;
+		ball.change = ballSpeed;
 		
 		Graphics2D g2d = (Graphics2D) g;
 		
@@ -175,11 +190,11 @@ public class Pong extends JPanel implements ActionListener {
 		
 		if (ball.getX() <= 10) {
 			comPoints++;
-			ball = new Ball();
+			ball = new Ball(ballSpeed);
 			System.out.println("Com Points++");
 		} else if (ball.getX() >= windowWidth)  {
 			playPoints++;
-			ball = new Ball();
+			ball = new Ball(ballSpeed);
 			System.out.println("Player Points++");
 		}
 
@@ -200,15 +215,32 @@ public class Pong extends JPanel implements ActionListener {
 		 */
 		Font font = new Font("Arial", Font.PLAIN, 96);
 		
+		JTextField score = new JTextField();
+		
 		g2d.setFont(font);
 		
 		g2d.setColor(Color.white);
 		
-		g2d.drawString("POGGERS", (windowWidth / 4), (windowHeight / 4) );
+		g2d.drawString("Pong", (int) (windowWidth / 2.6), (windowHeight / 4) );
 		
 		
 		
-		
+	}
+	
+	public void setPlayerSpeed(double speed) {
+		playerSpeed = speed;
+	}
+	
+	public void setComputerSpeed(double speed) {
+		computerSpeed = speed;
+	}
+	
+	public void setBallSpeed(double speed) {
+		ballSpeed = speed;
+	}
+	
+	public void setWinningScore(int score) {
+		desiredScore = score;
 	}
 	
 	
