@@ -108,14 +108,11 @@ public class Pong extends JPanel implements ActionListener {
 		g2d.drawImage( mc.getImage(), (int) mc.getX(), (int) mc.getY(), this);
 		g2d.drawImage( ball.getImage(), (int) ball.getX(), (int) ball.getY(), this);
 		g2d.drawImage( com.getImage(), (int) com.getX(), (int) com.getY(), this);
-		
-		if (!gameStart) {
-			startScreen(g2d);
-		}
 
 		
 		windowSIZE();
 		
+		//If the game is currently going on
 		if (gameStart) {
 			ball.move(); //moves the ball
 			computerAI();
@@ -124,6 +121,11 @@ public class Pong extends JPanel implements ActionListener {
 		//updates the screen with new ball's location
 		repaint( ( (int) ball.getX() )-100, (int) ball.getY()-100, (int) ball.getWidth()+1000, (int) ball.getHeight()+1000 );
 		repaint( (int) com.getX()-100, (int) com.getY()-100, (int) com.getWidth()+1000, (int) com.getHeight()+1000 );
+		
+		//if the game has ended
+		if (!gameStart) {
+			endScreen(g2d);
+		}
 		
 		//System.out.println("Ball:\t" + ball.getX() + "\t" + ball.getY() ); //prints the ball's X and Y on terminal
 		
@@ -188,19 +190,26 @@ public class Pong extends JPanel implements ActionListener {
 	
 	private void pointCheck() { //checks if the ball has made it to the 
 		
+		//if the computer makes a goal
 		if (ball.getX() <= 10) {
 			comPoints++;
 			ball = new Ball(ballSpeed);
-			System.out.println("Com Points++");
-		} else if (ball.getX() >= windowWidth)  {
+			System.out.println("Computer Points: " + comPoints + "\nPlayer Points: " + playPoints);
+		} else if (ball.getX() >= windowWidth)  { //if the player makes a goal
 			playPoints++;
 			ball = new Ball(ballSpeed);
-			System.out.println("Player Points++");
+			System.out.println("Computer Points: " + comPoints + "\nPlayer Points: " + playPoints);
+		}
+		
+		//End the game if one of them has gotten enough points
+		if ( (comPoints >= desiredScore) || (playPoints >= desiredScore) ) {
+			gameStart = false;
 		}
 
 		
 	}
 	
+	//Gives variables to objects that need them
 	private void windowSIZE() {
 		mc.screenHeight = windowHeight;
 		ball.screenHeight = windowHeight;
@@ -208,12 +217,12 @@ public class Pong extends JPanel implements ActionListener {
 		com.screenHeight = windowHeight;
 	}
 	
-	private void startScreen(Graphics g2d) {
+	private void endScreen(Graphics g2d) {
 		
 		/**
 		 * This part is here to make the title
 		 */
-		Font font = new Font("Arial", Font.PLAIN, 96);
+		Font font = new Font("Arial", Font.PLAIN, 48);
 		
 		JTextField score = new JTextField();
 		
@@ -221,7 +230,21 @@ public class Pong extends JPanel implements ActionListener {
 		
 		g2d.setColor(Color.white);
 		
-		g2d.drawString("Pong", (int) (windowWidth / 2.6), (windowHeight / 4) );
+		String output1 = "";
+		String output3 = "Computer Points: " + comPoints;
+		String output4 = "Player Points: " + playPoints;
+		
+		//Who won?
+		if (comPoints >= desiredScore) {
+			output1 = "You lose! Computer wins!";
+		} else if (playPoints >= desiredScore) {
+			output1 = "You win! Computer Loses!";
+		}
+		
+		//Prints out end screen
+		g2d.drawString(output1, (int) (windowWidth / 4), (int) (windowHeight / 4) );
+		g2d.drawString(output3, (int) (windowWidth / 4), (int) ( (windowHeight / 3)) );
+		g2d.drawString(output4, (int) (windowWidth / 4), (int) ( (windowHeight / 2.5)) );
 		
 		
 		

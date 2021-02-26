@@ -133,6 +133,7 @@ public class startScreenforPong {
 				}
 			});
 			
+			//lets the program grab the value from inside the drop down
 			cb.addActionListener( new ActionListener() {
 				
 				@Override
@@ -176,7 +177,7 @@ public class startScreenforPong {
 			System.out.print(output);
 		}
 		
-		public void setupPong() {
+		public void setupPong() { //start the pong game with the following information
 			
 			Application ex = new Application();
 			ex.setVisible(true);
