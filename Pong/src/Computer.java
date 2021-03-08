@@ -1,5 +1,5 @@
 import java.awt.*;
-import java.awt.event.KeyEvent;
+//import java.awt.event.KeyEvent;
 import java.util.*;
 import javax.swing.*;
 
@@ -9,7 +9,7 @@ public class Computer {
 	public double dy;
 	
 	//Used to change how "fast" the computer moves
-	public double changeY = 0.7;
+	public double changeY;
 	
 	//The position of the computer
 	private double x = 900;
@@ -24,14 +24,41 @@ public class Computer {
 	
 	private Image image;
 	
-	public Computer() {
-		imageLoad();
+	public Computer(double moveChange, String customization) {
+		
+		changeY = moveChange;
+		
+		imageLoad(customization);
 		initialAI();
 	}
 	
-	private void imageLoad() {
+	private void imageLoad(String customization) {
 		
-		ImageIcon imageURL = new ImageIcon("src/art assets/Paddle.png");
+		ImageIcon imageURL;
+		
+		switch (customization) {
+		case "normal":
+			imageURL = new ImageIcon("src/art assets/Paddle.png");
+			break;
+		case "red":
+			imageURL = new ImageIcon("src/art assets/CustomColors/Red.png");
+			break;
+		case "blue":
+			imageURL = new ImageIcon("src/art assets/CustomColors/Blue.png");
+			break;
+		case "green":
+			imageURL = new ImageIcon("src/art assets/CustomColors/Green.png");
+			break;
+		case "rainbow":
+			imageURL = new ImageIcon("src/art assets/CustomColors/Rainbow.png");
+			break;
+		case "3":
+			imageURL = new ImageIcon("src/art assets/CustomColors/3.png");
+			break;
+		default:
+			imageURL = new ImageIcon("src/art assets/Paddle.png");
+		}
+		
 		image = imageURL.getImage();
 		
 		width = image.getWidth(null);

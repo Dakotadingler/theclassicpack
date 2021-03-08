@@ -1,6 +1,6 @@
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.*;
+//import java.util.*;
 import javax.swing.*;
 
 
@@ -10,7 +10,7 @@ public class Player {
 	private double dy;
 	
 	//how "fast" the player moves
-	public double changeY = 15;
+	public double changeY;
 	
 	//the position of the player
 	private double x = 100;
@@ -25,16 +25,42 @@ public class Player {
 	//Screen Height
 	public int screenHeight;
 	
-	public Player() {
+	public Player(double moveChange, String customization) {
 		
-		imageLoad();
+		changeY = moveChange;
+		
+		imageLoad(customization);
 		
 	}
 	
 	
-	private void imageLoad() { //loads the image into the program
+	private void imageLoad(String customization) { //loads the image into the program
 		
-		ImageIcon imageURL = new ImageIcon("src/art assets/Paddle.png");
+		ImageIcon imageURL;
+		
+		switch (customization) {
+		case "normal":
+			imageURL = new ImageIcon("src/art assets/Paddle.png");
+			break;
+		case "red":
+			imageURL = new ImageIcon("src/art assets/CustomColors/Red.png");
+			break;
+		case "blue":
+			imageURL = new ImageIcon("src/art assets/CustomColors/Blue.png");
+			break;
+		case "green":
+			imageURL = new ImageIcon("src/art assets/CustomColors/Green.png");
+			break;
+		case "rainbow":
+			imageURL = new ImageIcon("src/art assets/CustomColors/Rainbow.png");
+			break;
+		case "3":
+			imageURL = new ImageIcon("src/art assets/CustomColors/3.png");
+			break;
+		default:
+			imageURL = new ImageIcon("src/art assets/Paddle.png");
+		}
+		
 		image = imageURL.getImage();
 		
 		width = image.getWidth(null);
@@ -79,9 +105,9 @@ public class Player {
 		
 		int key = e.getKeyCode();
 		
-		if (key == KeyEvent.VK_UP) {
+		if (key == KeyEvent.VK_W) {
 			dy = -1* changeY;
-		} else if (key == KeyEvent.VK_DOWN) {
+		} else if (key == KeyEvent.VK_S) {
 			dy = changeY;
 		}
 		
@@ -91,7 +117,8 @@ public class Player {
 		
 		int key = e.getKeyCode();
 		
-		if ( (key == KeyEvent.VK_UP) || (key == KeyEvent.VK_DOWN) ) {
+		
+		if ( (key == KeyEvent.VK_W) || (key == KeyEvent.VK_S) ) {
 			dy = 0;
 		}
 		
