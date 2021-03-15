@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 //import java.util.*;
 //import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.Timer;
 
@@ -39,6 +40,10 @@ public class Pong extends JPanel implements ActionListener {
 	private double playerSpeed=10;
 	private double computerSpeed=10;
 	private double ballSpeed=10;
+	
+	//Used for physics clock
+	private boolean clockActivate = true;
+	private int clockTick = 1;
 	
 	
 	
@@ -81,7 +86,7 @@ public class Pong extends JPanel implements ActionListener {
 		
 		//used for detecting collisions
 		collisionX = mc.getWidth();
-		collisionY = mc.getHeight();
+		collisionY = mc.getHeight() - 20;
 		
 //		windowSET(); //This gives the window WIDTH and HEIGHT to game objects to use in AI calculations
 		
@@ -123,6 +128,9 @@ public class Pong extends JPanel implements ActionListener {
 		
 		//If the game is currently going on
 		if (gameStart) {
+			if (clockActivate) {
+				clockTick();
+			}
 			ball.move(); //moves the ball
 			computerAI();
 		}
@@ -157,6 +165,9 @@ public class Pong extends JPanel implements ActionListener {
 	private void step() { //if a key is pressed, do this
 		
 		if (gameStart) {
+			if (clockActivate) {
+				clockTick();
+			}
 			mc.move(); //has the player move
 		}
 		
@@ -281,6 +292,17 @@ public class Pong extends JPanel implements ActionListener {
 	
 	public void setCustomColor(String color) {
 		customization = color;
+	}
+	
+	public void clockTick() {
+		try {
+			//TimeUnit.SECONDS.sleep(4/5);
+			//TimeUnit.MILLISECONDS.sleep(1);
+			TimeUnit.MICROSECONDS.sleep(clockTick);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	

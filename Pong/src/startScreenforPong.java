@@ -70,6 +70,8 @@ public class startScreenforPong {
 			final JComboBox<String> cb = new JComboBox<String>(winningScore);
 			cb.setVisible(true);
 			
+			
+			
 			//Makes a drop down menu for difficulty
 			String [] difficulty = {"Easy", "Medium", "Evil >:)"};
 			final JComboBox<String> cb2 = new JComboBox<String>(difficulty);
@@ -79,6 +81,9 @@ public class startScreenforPong {
 			String[] customColors = {"Normal", "Red", "The Number 3", "Green", "Rainbow", "Blue"};
 			final JComboBox<String> cb3 = new JComboBox<String>(customColors);
 			cb3.setVisible(true);
+			
+			
+			//grab the frequency for the CPU
 			
 			
 			
@@ -241,21 +246,21 @@ public class startScreenforPong {
 					
 					//get speeds correct
 					if (whichDifficulty == "Easy") {
-						speedCom = 0.60;
+						speedCom = 1.20;
 						speedPlay = 15.0;
-						speedBall = 1.0;
+						speedBall = 2.0;
 					} else if (whichDifficulty == "Normal") {
-						speedCom = 1.0;
+						speedCom = 1.6;
 						speedPlay = 15.0;
-						speedBall = 1.2;
+						speedBall = 2.0;
 					} else if (whichDifficulty == "Evil") {
 						speedCom = 12.0;
 						speedPlay = 15.0;
-						speedBall = 2.0;
+						speedBall = 2.5;
 					} else { //do normal settings
-						speedCom = 1.0;
+						speedCom = 1.2;
 						speedPlay = 15.0;
-						speedBall = 1.2;
+						speedBall = 2.0;
 					}
 					
 					if (winScore == 0) {
