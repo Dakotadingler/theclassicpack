@@ -1,6 +1,6 @@
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.*;
+//import java.util.*;
 import javax.swing.*;
 
 
@@ -10,7 +10,7 @@ public class Player {
 	private double dy;
 	
 	//how "fast" the player moves
-	public double changeY = 15;
+	public double changeY;
 	
 	//the position of the player
 	private double x = 100;
@@ -25,7 +25,9 @@ public class Player {
 	//Screen Height
 	public int screenHeight;
 	
-	public Player() {
+	public Player(double moveChange) {
+		
+		changeY = moveChange;
 		
 		imageLoad();
 		

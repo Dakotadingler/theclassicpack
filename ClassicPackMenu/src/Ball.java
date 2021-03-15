@@ -1,9 +1,9 @@
 import java.awt.*;
-import java.awt.event.*;
+//import java.awt.event.*;
 import java.util.*;
-import javax.swing.Timer;
+//import javax.swing.Timer;
 
-import javax.swing.JPanel;
+//import javax.swing.JPanel;
 import javax.swing.*;
 
 
@@ -19,7 +19,7 @@ public class Ball {
 	private double dy;
 	
 	//how fast the ball will move
-	private double change = 1;
+	public double change;
 	
 	//Ball position
 	private double x = 500;
@@ -31,10 +31,12 @@ public class Ball {
 	
 	private Image image;
 	
-	public Ball( ) {
+	public Ball( double moveChange ) {
 		
 		//screenWidth = sW;
 		//screenHeight = sH;
+		
+		change = moveChange;
 		
 		imageLoad();
 		initialMove(); //initial random direction of movement

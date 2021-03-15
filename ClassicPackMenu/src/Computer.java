@@ -1,5 +1,5 @@
 import java.awt.*;
-import java.awt.event.KeyEvent;
+//import java.awt.event.KeyEvent;
 import java.util.*;
 import javax.swing.*;
 
@@ -9,7 +9,7 @@ public class Computer {
 	public double dy;
 	
 	//Used to change how "fast" the computer moves
-	public double changeY = 0.7;
+	public double changeY;
 	
 	//The position of the computer
 	private double x = 900;
@@ -24,7 +24,10 @@ public class Computer {
 	
 	private Image image;
 	
-	public Computer() {
+	public Computer(double moveChange) {
+		
+		changeY = moveChange;
+		
 		imageLoad();
 		initialAI();
 	}
