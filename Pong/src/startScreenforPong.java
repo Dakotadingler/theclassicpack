@@ -1,19 +1,13 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 
 public class startScreenforPong {
 
@@ -43,12 +37,33 @@ public class startScreenforPong {
 		
 		public String whichDifficulty;
 		public String customization;
+		private String userName = "Jacob";
 
 		public static void main(String[] args) {
-			new startScreenforPong();
+			
+			startScreenforPong test = new startScreenforPong();
 		}
 		
 		public startScreenforPong() {
+			startScreen();
+		}
+		
+		/**
+		In order to have the userName put into the program
+		1. load a blank constructor for startScreenforPong
+		2. call the method sendUsername(userName) the parameter is the username the user has put in
+		3. load startScreen()
+		**/
+		
+		//load this method before running startScreenforPong
+		public void sendUsername(String user_input) {
+			userName = user_input;
+		}
+		
+		public void startScreen() {
+			
+			if (userName == null)
+				userName = "Player";
 			
 			
 			Title.setFont(titleFont); //sets font
@@ -66,7 +81,7 @@ public class startScreenforPong {
 			frame.setTitle("Test"); //gotta have a title on top :)
 			
 			//makes a drop down menu for winning score
-			String[] winningScore = {"5", "10", "15", "20", "25"};
+			String[] winningScore = {"5", "10", "15", "20", "25", "Unlimited"};
 			final JComboBox<String> cb = new JComboBox<String>(winningScore);
 			cb.setVisible(true);
 			
@@ -93,72 +108,7 @@ public class startScreenforPong {
 			frame.add(cb2, BorderLayout.CENTER);
 			frame.add(cb3, BorderLayout.LINE_END);
 			frame.add(startTheGame, BorderLayout.SOUTH);
-			//frame.add(butt3, BorderLayout.LINE_END);
 			
-			/*
-			butt1.addActionListener( new ActionListener() { //what does button1 do?
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					System.out.println("Easy");
-					
-					speedCom = 0.60;
-					speedPlay = 15.0;
-					speedBall = 1.0;
-					
-					if (winScore == 0) {
-						winScore = 10;
-					}
-					
-					printSettings();
-					
-					setupPong();
-					
-					//frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-				}
-			});
-			
-			butt2.addActionListener( new ActionListener() { //what does button2 do?
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					System.out.println("Normal");
-					
-					speedCom = 1.0;
-					speedPlay = 15.0;
-					speedBall = 1.2;
-					
-					if (winScore == 0) {
-						winScore = 10;
-					}
-					
-					printSettings();
-					
-					setupPong();
-					
-					//frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-				}
-			});
-			
-			butt3.addActionListener( new ActionListener() { //what does button3 do?
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					System.out.println("Evil");
-					
-					speedCom = 12.0;
-					speedPlay = 15.0;
-					speedBall = 2.0;
-					
-					if (winScore == 0) {
-						winScore = 10;
-					}
-					
-					printSettings();
-					
-					setupPong();
-					
-					//frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-				}
-			});
-			*/
 			
 			//lets the program grab the value from inside the drop down
 			cb.addActionListener( new ActionListener() {
@@ -179,8 +129,10 @@ public class startScreenforPong {
 						winScore = 20;
 					} else if (temp == "25") {
 						winScore = 25;
+					} else if (temp == "Unlimited"){
+						winScore = -1;
 					} else {
-						winScore = 10;
+						winScore = 5;
 					}
 					
 					
@@ -203,7 +155,7 @@ public class startScreenforPong {
 					} else if (temp == "Evil >:)") {
 						whichDifficulty = "Evil";
 					} else {
-						whichDifficulty = "Normal";
+						whichDifficulty = "Easy";
 					}
 					
 				}
@@ -264,7 +216,7 @@ public class startScreenforPong {
 					}
 					
 					if (winScore == 0) {
-						winScore = 10;
+						winScore = 5;
 					}
 					
 					if (customization == null) {
@@ -294,14 +246,14 @@ public class startScreenforPong {
 			
 		}
 		
-		public void printSettings() { //prints out the speeds and the winnning score 
-			String output = "Player Speed:\t" + speedPlay +"\nComputer Speed:\t" + speedCom + "\nBall Speed:\t" + speedBall + "\nWinning Score:\t" + winScore + "\n";
-			System.out.print(output);
+		private void printSettings() { //prints out the speeds and the winnning score 
+			String output = "Player Speed:\t" + speedPlay +"\nComputer Speed:\t" + speedCom + "\nBall Speed:\t" + speedBall + "\nWinning Score:\t" + winScore + "\n" + "Player name:\t" + userName;
+			System.out.println(output);
 		}
 		
-		public void setupPong() { //start the pong game with the following information
+		private void setupPong() { //start the pong game with the following information
 			
-			Application ex = new Application();
+			ApplicationPong ex = new ApplicationPong();
 			ex.setVisible(true);
 			
 			ex.setWindowWidth(windowWidth);
@@ -311,8 +263,10 @@ public class startScreenforPong {
 			ex.setSpeedOfBall(speedBall);
 			ex.setTheWinningScore(winScore);
 			ex.setCustomColor(customization);
+			ex.setName(userName);
 			
-			//frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+			//frame.dispose() closes the startScreen
+			frame.dispose();
 			
 			ex.load();
 			

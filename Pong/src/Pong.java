@@ -1,25 +1,39 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 //import java.util.*;
 //import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.Timer;
-
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.DataLine.Info;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 //import javax.swing.JPanel;
 import javax.swing.*;
 
 
 public class Pong extends JPanel implements ActionListener {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1237313979050845997L;
 	private Timer timer; //used for movement (somehow)
 	private final int DELAY = 10;
 	
-	private Player mc; //Main character object
-	private Ball ball; //Ball object
-	private Computer com; //Computer player
-	private ScoreCounter playerCounter; //Counter for the player score
-	private ScoreCounter comCounter; //Counter for the com score
+	private Player_Pong mc; //Main character object
+	private Ball_Pong ball; //Ball object
+	private Computer_Pong com; //Computer player
+	private ScoreCounter_Pong playerCounter; //Counter for the player score
+	private ScoreCounter_Pong comCounter; //Counter for the com score
+	private Background_Pong secret;
 	
 	private String customization = "normal";
 	
@@ -45,12 +59,36 @@ public class Pong extends JPanel implements ActionListener {
 	private boolean clockActivate = true;
 	private int clockTick = 1;
 	
+	//detects if the game is paused or not
+	private boolean pause = false;
+	//if the player wants unlimited play
+	public boolean unLimitedPlay = false;
+	
+	//used for username and where it should go
+	private String userName;
+	private int userNameX = 450;
+	private int userNameY = 150;
+	
+	//Links the application object that calls Pong so the game can be closed
+	private ApplicationPong link2;
+	
+	private Clip clip; //used for music
+	
 	
 	
 	public Pong() {
 		
 		
 		
+	}
+	
+	public void setName(String newName) {
+		userName = newName;
+	}
+	
+	//Links the application object so the game can be closed
+	public void setLink2(ApplicationPong newLink) {
+		link2 = newLink;
 	}
 
 	@Override
@@ -62,7 +100,11 @@ public class Pong extends JPanel implements ActionListener {
 		
 	}
 	
+	
 	public void initSetup() {
+		
+		//pause = false;
+		
 		
 		addKeyListener( new TAdapter() ); //used to notice buttons
 		setBackground( Color.black ); //sets the background of the window to black
@@ -70,17 +112,33 @@ public class Pong extends JPanel implements ActionListener {
 		
 		//Player.setHeight(windowHeight);
 		
+		if (customization == "3") {
+			secret = new Background_Pong(200, 200);
+		}
+		
 		//creates objects inside the game
-		mc = new Player(playerSpeed, customization);
-		ball = new Ball(ballSpeed);
-		com = new Computer(computerSpeed, customization);
-		playerCounter =  new ScoreCounter(400, 20);
-		comCounter = new ScoreCounter(600, 20);
+		mc = new Player_Pong(playerSpeed, customization);
+		ball = new Ball_Pong(ballSpeed);
+		com = new Computer_Pong(computerSpeed, customization);
+		playerCounter =  new ScoreCounter_Pong(400, 20);
+		comCounter = new ScoreCounter_Pong(600, 20);
+		
+		
+		if ( (userName.equalsIgnoreCase("RickRolled") ) && (customization != "3") )
+			checkMusic(0); //RickRoll the player
+		else if (customization == "3")
+			checkMusic(1); //The number 3 has epic music
+		else if (userName.equalsIgnoreCase("weird"))
+			checkMusic(2); //battleblock theater music (switched it lol)
+		
+		
 		
 		
 		mc.changeY = playerSpeed;
 		com.changeY = computerSpeed;
 		ball.change = ballSpeed;
+		
+		gameStart = true;
 		
 		//mc.setHeight(windowHeight);
 		
@@ -94,6 +152,8 @@ public class Pong extends JPanel implements ActionListener {
 		//Used for moving (moves every timer)
 		timer = new Timer(DELAY, this);
 		timer.start();
+		
+		
 		
 		
 		
@@ -117,22 +177,47 @@ public class Pong extends JPanel implements ActionListener {
 		
 		Graphics2D g2d = (Graphics2D) g;
 		
+		
+		if (customization == "3") {
+			g2d.drawImage( secret.getImage(), (int) secret.getX(), (int) secret.getY(), this);
+			
+			ball.updateImage(true);
+			
+		} else {
+			ball.updateImage(false);
+		}
+		
+		
 		g2d.drawImage( mc.getImage(), (int) mc.getX(), (int) mc.getY(), this);
 		g2d.drawImage( ball.getImage(), (int) ball.getX(), (int) ball.getY(), this);
 		g2d.drawImage( com.getImage(), (int) com.getX(), (int) com.getY(), this);
 		g2d.drawImage( playerCounter.getImage(), (int) playerCounter.getX(), (int) playerCounter.getY(), this);
 		g2d.drawImage( comCounter.getImage(), (int) comCounter.getX(), (int) comCounter.getY(), this);
-
+		g2d.drawString(userName, userNameX, userNameY);
+		
+		
 		
 		windowSIZE();
 		
+		//Used to display the players name
+		Font font = new Font("Arial", Font.PLAIN, 48);
+		g2d.setFont(font);
+		g2d.setColor(Color.white);
+		g2d.drawString(userName, userNameX, userNameY);
+		
+		
 		//If the game is currently going on
-		if (gameStart) {
+		if ( (gameStart) && (!pause) ) {
 			if (clockActivate) {
 				clockTick();
 			}
+			
 			ball.move(); //moves the ball
 			computerAI();
+		}
+		
+		if (customization == "3") {
+			repaint( (int) secret.getX(), (int) secret.getY(), secret.getWidth(), secret.getHeight() );
 		}
 		
 		//updates the screen with new ball's location
@@ -140,6 +225,7 @@ public class Pong extends JPanel implements ActionListener {
 		repaint( (int) com.getX()-100, (int) com.getY()-100, (int) com.getWidth()+1000, (int) com.getHeight()+1000 );
 		repaint( (int) playerCounter.getX()-100, (int) playerCounter.getY()-100, (int) playerCounter.getWidth()+1000, (int) playerCounter.getHeight()+1000 );
 		repaint( (int) comCounter.getX()-100, (int) comCounter.getY()-100, (int) comCounter.getWidth()+1000, (int) comCounter.getHeight()+1000 );
+		
 		
 		//if the game has ended
 		if (!gameStart) {
@@ -164,7 +250,7 @@ public class Pong extends JPanel implements ActionListener {
 	
 	private void step() { //if a key is pressed, do this
 		
-		if (gameStart) {
+		if ( (gameStart) && (!pause) ) {
 			if (clockActivate) {
 				clockTick();
 			}
@@ -183,10 +269,58 @@ public class Pong extends JPanel implements ActionListener {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			mc.keyPressed(e);
+			
 		}
 		
 		public void keyReleased(KeyEvent e) {
 			mc.keyReleased(e);
+			
+			//This block of code is for pausing the game
+			int key = e.getKeyCode();
+			
+			//if the player has pressed the pause button
+			if (key == KeyEvent.VK_ESCAPE) {
+				
+				if ( (!pause) && (gameStart) )//if the game is not paused, then pause it
+					pause = true;
+				else //if the game is already paused, then unpause it
+					pause = false;
+				
+				//if the user wants to close the game after the game ends, then close the JFrame that opened the Pong game
+				if (!gameStart) {
+					link2.dispose();
+					System.exit(0);
+				}
+					
+				
+				System.out.println("ESC Pressed:\t" + gameStart + "\t" + pause);
+				
+			}
+			
+			//if the player has pressed the space bar
+			if (key == KeyEvent.VK_SPACE) {
+				
+				//if the game has ended
+				if (!gameStart) {
+					//restart the game
+					gameStart = true;
+					playPoints = 0;
+					comPoints = 0;
+					pause = false;
+					//initSetup();
+					mc = new Player_Pong(playerSpeed, customization);
+					ball = new Ball_Pong(ballSpeed);
+					com = new Computer_Pong(computerSpeed, customization);
+					playerCounter =  new ScoreCounter_Pong(400, 20);
+					comCounter = new ScoreCounter_Pong(600, 20);
+					System.out.println(gameStart + "\t" + pause);
+					
+				}
+				
+				
+			}
+				
+			
 		}
 		
 	}
@@ -215,18 +349,22 @@ public class Pong extends JPanel implements ActionListener {
 		//if the computer makes a goal
 		if (ball.getX() <= 10) {
 			comPoints++;
-			ball = new Ball(ballSpeed);
+			ball = new Ball_Pong(ballSpeed);
 			comCounter.counterUpdate(comPoints);
+			if (customization == "3")
+				secret.update();
 			System.out.println("Computer Points: " + comPoints + "\nPlayer Points: " + playPoints);
 		} else if (ball.getX() >= windowWidth)  { //if the player makes a goal
 			playPoints++;
-			ball = new Ball(ballSpeed);
+			ball = new Ball_Pong(ballSpeed);
 			playerCounter.counterUpdate(playPoints);
+			if (customization == "3")
+				secret.update();
 			System.out.println("Computer Points: " + comPoints + "\nPlayer Points: " + playPoints);
 		}
 		
 		//End the game if one of them has gotten enough points
-		if ( (comPoints >= desiredScore) || (playPoints >= desiredScore) ) {
+		if ( ( (comPoints >= desiredScore) || (playPoints >= desiredScore) ) && !(unLimitedPlay)) {
 			gameStart = false;
 		}
 
@@ -248,7 +386,7 @@ public class Pong extends JPanel implements ActionListener {
 		 */
 		Font font = new Font("Arial", Font.PLAIN, 48);
 		
-		JTextField score = new JTextField();
+		//JTextField score = new JTextField();
 		
 		g2d.setFont(font);
 		
@@ -303,6 +441,55 @@ public class Pong extends JPanel implements ActionListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private void checkMusic(int code) {
+		/*
+		 * 0 - if the player needs to be rickrolled
+		 * 1 - the number 3 has to come with super epic music to go along with that sick epic gameplay am i right? metal gear solid 2 music is good right?
+		 * 2 - wow the user wants to be weird, how odd. Let's give them some weird music from battleblock theater i guess
+		 */
+		
+		AudioInputStream audioInputStream;
+		
+		String URL = "";
+		
+		if (code == 0) //if the player needs to be rickrolled then load the rickroll music
+			URL = "src/art assets/audio/Rickrolled.wav";
+		else if (code == 1) //if the player deserves to see the almighty number 3, then give them what they came here for
+			URL = "src/art assets/audio/Ball.wav";
+			//URL = "src/art assets/audio/Secret.wav";
+		else if (code == 2)
+			URL = "src/art assets/audio/Secret.wav";
+		
+		//if music should be played
+		if ( (code == 0) || (code == 1) || (code == 2) ) {
+			
+			try {
+				//load the music
+				audioInputStream = AudioSystem.getAudioInputStream(new File(URL) );
+				AudioFormat af = audioInputStream.getFormat();
+				DataLine.Info info = new DataLine.Info(Clip.class, af);
+				clip = (Clip) AudioSystem.getLine(info);
+				clip.open(audioInputStream);
+				
+				clip.loop( Integer.MAX_VALUE - 1); //makes it so the song will loop (will loop a long time but not infinity though
+				
+				clip.start();
+				
+				//Thread.sleep( clip.getFrameLength() );
+				
+				//clip.close();
+			} catch (UnsupportedAudioFileException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (LineUnavailableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
 	}
 	
 	
